@@ -1,36 +1,40 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { useEmailSignupMutation } from "./store/API/userAuthAPI";
 
-function App() {
-  const [count, setCount] = useState(0);
-  // console.log(count);
+const App = () => {
+  const [data, setData] = useState({ email: "", password: "" });
+
+  const [emailSignup, { isLoading, isError, isSuccess }] =
+    useEmailSignupMutation();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    emailSignup({
+      email: data.email,
+      password: data.password,
+    });
+  };
+
+  if (isLoading) return <h1>Loading...</h1>;
+  if (isError) return <h1>Error occured...</h1>;
+  if (isSuccess) return <h1>Account Created Successfully</h1>;
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <form className="container mx-auto max-w-8xl" onSubmit={handleSubmit}>
+      <input
+        type="email"
+        value={data.email}
+        onChange={(e) => setData({ ...data, email: e.target.value })}
+      />
+      <br />
+      <input
+        type="password"
+        value={data.password}
+        onChange={(e) => setData({ ...data, password: e.target.value })}
+      />
+      <button type="submit">Create User</button>
+    </form>
   );
-}
+};
 
 export default App;
